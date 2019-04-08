@@ -1,0 +1,53 @@
+// {   
+// // See https://go.microsoft.com/fwlink/?LinkId=733558   
+// // for the documentation about the tasks.json format   
+// "version": "2.0.0",   
+// "tasks": [       
+//     {           
+//         "label": "BldFile",           
+//         "type": "shell",           
+//         "command": "g++-8",           
+//         "args": [               
+//             "-w",              
+//             "-g",               
+//             "${workspaceRoot}/pipeline.cpp",
+//             "-o",               
+//             "${workspaceRoot}/pipeline",               
+//             "-lSDL2"           
+//             ],           
+//         "group": "build",           
+//         "problemMatcher": []       
+//     }   
+//         ]
+// }
+
+{   
+// See https://go.microsoft.com/fwlink/?LinkId=733558   
+// for the documentation about the tasks.json format   
+"version": "2.0.0",  
+"tasks": [       
+    {           
+        "label": "BldFile",           
+        "type": "shell",           
+        "command": "g++",           
+        "args": [     
+            "-w", 
+            "-o",
+            "teapot",         
+            "phongCube.cpp",              
+            "-framework",               
+            "OpenGl",
+            "-lglew",               
+            "-lSDL2"           
+            ],           
+        "group": "build",           
+    },
+    {           
+        "label": "RunFile",   
+        "dependsOn": ["BldFile"],        
+        "type": "shell",           
+        "command": "./teapot",           
+        "group": "build",           
+    }
+        ]
+}
