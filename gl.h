@@ -383,12 +383,8 @@ void setupMVP(mat4 & mvp, mat4 & modelOut,mat4 & viewOut,mat4 & projOut)
 	view = 		glm::rotate(view, 			glm::radians(-myCam.yaw), glm::vec3(0.0, 1.0f, 0.0));
 	view = 		glm::translate(view, 		glm::vec3(-myCam.camX, -myCam.camY, -myCam.camZ));
 	mat4 model = glm::mat4(1.0);
-	// model = glm::translate(model, glm::vec3(0, 0, -10));
-	// model = glm::rotate(model, glm::radians(-potRot), glm::vec3(0.0f, 1.0f, 0.0f));
-	// model = glm::rotate(model, glm::radians(-potRot), glm::vec3(1.0f, 0.0f, 0.0f));
-	// model = glm::scale(model, glm::vec3(3.0));
 	model = glm::mat4(1.0);
-    model = glm::translate(model, glm::vec3(0, -5, -30));
+    model = glm::translate(model, glm::vec3(0, -1, -30));
     model = glm::rotate(model, glm::radians(-potRot), glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::scale(model, glm::vec3(40)); //40 3.0
 	mvp = proj * view * model;

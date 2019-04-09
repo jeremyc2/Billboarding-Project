@@ -102,7 +102,6 @@ int main(int aargc, char **argv) {
             vertexBufferData[i++] = vertexBuffer1[vb].normal[1];
             vertexBufferData[i++] = vertexBuffer1[vb].normal[2];
         }
-
     }
 
     // TODO add in the other texture
