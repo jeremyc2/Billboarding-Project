@@ -2,6 +2,7 @@ uniform mat4 u_Matrix;
 uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Projection;
+uniform float scaleFactor;
 
 attribute vec3 a_Position;
 attribute vec2 a_UV;
@@ -15,19 +16,19 @@ void main()
 {
    mat4 ModelView = u_View * u_Model;
    // Column 0:
-   ModelView[0][0] = 40.0;
+   ModelView[0][0] = scaleFactor;
    ModelView[0][1] = 0.0;
    ModelView[0][2] = 0.0;
 
    // Column 1:
    //ModelView[1][0] = 0.0;
-   //ModelView[1][1] = 40.0;
+   //ModelView[1][1] = scaleFactor;
    //ModelView[1][2] = 0.0;
 
    // Column 2:
    ModelView[2][0] = 0.0;
    ModelView[2][1] = 0.0;
-   ModelView[2][2] = 40.0;
+   ModelView[2][2] = scaleFactor;
 
 
 

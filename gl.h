@@ -18,6 +18,8 @@
 // More references 
 #define SCREEN_W 1600.0f
 #define SCREEN_H 900.0f
+#define TEXTURE_NUM 2
+#define OBJECT_NUM 2
 
 // Abbreviate namespace references 
 using glm::mat4;
@@ -51,6 +53,8 @@ bool isD = false;
 bool isS = false; 
 
 float threshold = 1.0;
+int texture = 0;
+int object = 0;
 
 enum Cycle {
 	BILLBOARD,
@@ -83,20 +87,12 @@ bool processUserInputs(bool & running)
 		}
 		if(e.type == SDL_KEYDOWN && e.key.keysym.sym == 't') 
 		{
-			threshold -= 0.01;
-			if(threshold < 0)
-			{
-				threshold = 0;
-			}
+			texture = (texture + 1) % TEXTURE_NUM;
 			break;
 		}
 		if(e.type == SDL_KEYDOWN && e.key.keysym.sym == 'y') 
 		{
-			threshold += 0.01;
-			if(threshold > 1.0)
-			{
-				threshold = 1.0;
-			}
+			object = (object + 1) % TEXTURE_NUM;
 			break;
 		}
 		if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) 
@@ -395,6 +391,26 @@ void setupMVP(mat4 & mvp, mat4 & modelOut,mat4 & viewOut,mat4 & projOut)
 	potRot += 1.50; // was .05
 }
 
+void setupMVP2(mat4 & mvp, mat4 & modelOut,mat4 & viewOut,mat4 & projOut)
+{
+	mat4 proj = glm::perspective(glm::radians(60.0f), SCREEN_W / SCREEN_H, 0.1f, 100.0f);  // Perspective matrix
+	mat4 view = glm::mat4(1.0);
+	view = 		glm::rotate(view, 			glm::radians(-myCam.pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	view = 		glm::rotate(view, 			glm::radians(-myCam.yaw), glm::vec3(0.0, 1.0f, 0.0));
+	view = 		glm::translate(view, 		glm::vec3(-myCam.camX, -myCam.camY, -myCam.camZ));
+	mat4 model = glm::mat4(1.0);
+	model = glm::mat4(1.0);
+    model = glm::translate(model, glm::vec3(0, 0, -50));
+    model = glm::rotate(model, glm::radians(-potRot), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(3)); //40 3.0
+	mvp = proj * view * model;
+	modelOut = model;
+	viewOut = view;
+	projOut = proj;
+
+	potRot += 1.50; // was .05
+}
+
 // setup MVP for floor
 void setupMVP1(mat4 & mvp, mat4 & modelOut,mat4 & viewOut,mat4 & projOut)
 {
@@ -412,6 +428,7 @@ void setupMVP1(mat4 & mvp, mat4 & modelOut,mat4 & viewOut,mat4 & projOut)
 	viewOut = view;
 	projOut = proj;
 }
+
 
 struct vertexData
 {
