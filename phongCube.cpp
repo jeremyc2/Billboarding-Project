@@ -4,6 +4,38 @@
 
 // compile command
 // g++ gl.cpp -lopengl -lglew -lSDL2
+// buildObject(&vertexBuffer, vertexBufferData, &vertexBufferNumBytes, &textureIDs, &stride, &success);
+void buildObject(vector<vertexData> & vertexBuffer, float * vertexBufferData, vector<material> materials, vector<int> & textureIDs, bool hasNormal, bool hasUV, bool & success){
+
+    int i = 0;
+    // Join data into interleaved buffer;
+    for (int vb = 0; vb < vertexBuffer.size(); vb++) {
+        vertexBufferData[i++] = vertexBuffer[vb].vert[0];
+        vertexBufferData[i++] = vertexBuffer[vb].vert[1];
+        vertexBufferData[i++] = vertexBuffer[vb].vert[2];
+
+        if (hasUV) {
+            vertexBufferData[i++] = vertexBuffer[vb].uv[0];
+            vertexBufferData[i++] = vertexBuffer[vb].uv[1];
+        }
+
+        if (hasNormal) {
+            vertexBufferData[i++] = vertexBuffer[vb].normal[0];
+            vertexBufferData[i++] = vertexBuffer[vb].normal[1];
+            vertexBufferData[i++] = vertexBuffer[vb].normal[2];
+        }
+
+    }
+
+    for (int mat = 0; mat < materials.size(); mat++) {
+        int tmp;
+        material m = materials[mat];
+        success &= loadTexture(m.map_Kd, tmp);
+        textureIDs.push_back(tmp);
+    }
+
+    validate(success, (char*) "Setup OpenGL Program");
+}
 
 int main(int aargc, char **argv) {
     SDL_Init(SDL_INIT_VIDEO);
@@ -41,50 +73,29 @@ int main(int aargc, char **argv) {
     /********************************
     * Object Loader
     * ******************************/
-    vector<material> materials;
     vector<vertexData> vertexBuffer;
-
-    bool hasUV;
+    vector<int> textureIDs;
     bool hasNormal;
+    bool hasUV;
+    vector<material> materials;
 
     success &= getObjData("bunny.obj", materials, vertexBuffer, hasUV, hasNormal);
-
-    // Build out a single array of floats
     int stride = 3 + 2 * hasUV + 3 * hasNormal;
     int vertexBufferNumBytes = stride * vertexBuffer.size() * sizeof(float);
     float *vertexBufferData = (float *)(malloc(vertexBufferNumBytes));
+    buildObject(vertexBuffer, vertexBufferData, materials, textureIDs, hasNormal, hasUV, success);
 
-    int i = 0;
-    // Join data into interleaved buffer;
-    for (int vb = 0; vb < vertexBuffer.size(); vb++) {
-        vertexBufferData[i++] = vertexBuffer[vb].vert[0];
-        vertexBufferData[i++] = vertexBuffer[vb].vert[1];
-        vertexBufferData[i++] = vertexBuffer[vb].vert[2];
+    vector<vertexData> vertexBuffer1;
+    vector<int> textureIDs1;
+    materials = vector<material>(); 
 
-        if (hasUV) {
-            vertexBufferData[i++] = vertexBuffer[vb].uv[0];
-            vertexBufferData[i++] = vertexBuffer[vb].uv[1];
-        }
+    success &= getObjData("bunny.obj", materials, vertexBuffer, hasUV, hasNormal);
+    int stride1 = 3 + 2 * hasUV + 3 * hasNormal;
+    int vertexBufferNumBytes1 = stride * vertexBuffer.size() * sizeof(float);
+    float *vertexBufferData1 = (float *)(malloc(vertexBufferNumBytes));
+    buildObject(vertexBuffer1, vertexBufferData1, materials, textureIDs1, hasNormal, hasUV, success);
 
-        if (hasNormal) {
-            vertexBufferData[i++] = vertexBuffer[vb].normal[0];
-            vertexBufferData[i++] = vertexBuffer[vb].normal[1];
-            vertexBufferData[i++] = vertexBuffer[vb].normal[2];
-        }
-
-    }
-
-    vector<int> textureIDs;
-    for (int mat = 0; mat < materials.size(); mat++) {
-        int tmp;
-        material m = materials[mat];
-        success &= loadTexture(m.map_Kd, tmp);
-        textureIDs.push_back(tmp);
-    }
-
-    validate(success, (char*) "Setup OpenGL Program");
-
-
+    // assert(vertexBufferData[1]);
     /********************************
     * Vertex Buffer Object
     * ******************************/
@@ -93,6 +104,15 @@ int main(int aargc, char **argv) {
    glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
    glBufferData(GL_ARRAY_BUFFER, vertexBufferNumBytes, vertexBufferData, GL_STATIC_DRAW);
+
+    /********************************
+    * Vertex Buffer Object
+    * ******************************/
+   int VBO1;
+   glGenBuffers(1, (GLuint *) &VBO1);
+   glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+
+   glBufferData(GL_ARRAY_BUFFER, vertexBufferNumBytes1, vertexBufferData1, GL_STATIC_DRAW);
 
     /********************************
     * Attribute Handles
@@ -155,6 +175,7 @@ int main(int aargc, char **argv) {
    myCam.camX = myCam.camY = myCam.camZ = myCam.pitch = myCam.yaw = myCam.roll = 0.0;
 
    int numDraw = vertexBuffer.size();
+   int numDraw1 = vertexBuffer1.size();
    bool running = true;
    int frame = 0;
 
@@ -176,6 +197,8 @@ int main(int aargc, char **argv) {
            /*************************
             * Setup Attributes
             *************************/
+
+
            glBindBuffer(GL_ARRAY_BUFFER, VBO);
            glVertexAttribPointer(aPositionHandle, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)0);
            glEnableVertexAttribArray(aPositionHandle);
@@ -185,12 +208,32 @@ int main(int aargc, char **argv) {
 
            glVertexAttribPointer(aNormalHandle, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)(0 + 5*sizeof(float)));
            glEnableVertexAttribArray(aNormalHandle);
+
+
+           /*************************
+            * Setup Attributes
+            *************************/
+
+
+           glBindBuffer(GL_ARRAY_BUFFER, VBO);
+           glVertexAttribPointer(aPositionHandle1, 3, GL_FLOAT, GL_FALSE, stride1 * sizeof(float), (void*)0);
+           glEnableVertexAttribArray(aPositionHandle1);
+
+           glVertexAttribPointer(aUVHandle1, 2, GL_FLOAT, GL_FALSE, stride1 * sizeof(float), (void*)(0 + 3*sizeof(float)));
+           glEnableVertexAttribArray(aUVHandle1);
+
+           glVertexAttribPointer(aNormalHandle1, 3, GL_FLOAT, GL_FALSE, stride1 * sizeof(float), (void*)(0 + 5*sizeof(float)));
+           glEnableVertexAttribArray(aNormalHandle1);
+
            /*************************
             * Setup Uniforms
             *************************/
            // Update texture
            glActiveTexture(GL_TEXTURE0 + 0);
            glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
+
+           glActiveTexture(GL_TEXTURE0 + 0);
+           glBindTexture(GL_TEXTURE_2D, textureIDs1[0]);
 
            //glUniform1i(uTextureHandle, 0);
            //glUniform1f(uThresholdHandle, threshold);
@@ -230,6 +273,7 @@ int main(int aargc, char **argv) {
            }
 
            glDrawArrays(GL_TRIANGLES, 0, numDraw);
+           glDrawArrays(GL_TRIANGLES, 0, numDraw1);
        }
 
        SDL_GL_SwapWindow(win);
