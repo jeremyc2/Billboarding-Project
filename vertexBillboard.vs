@@ -21,19 +21,17 @@ void main()
    ModelView[0][2] = 0.0;
 
    // Column 1:
-   //ModelView[1][0] = 0.0;
-   //ModelView[1][1] = scaleFactor;
-   //ModelView[1][2] = 0.0;
+   ModelView[1][0] = 0.0;
+   ModelView[1][1] = scaleFactor;
+   ModelView[1][2] = 0.0;
 
    // Column 2:
    ModelView[2][0] = 0.0;
    ModelView[2][1] = 0.0;
    ModelView[2][2] = scaleFactor;
 
-
-
    v_UV = a_UV;
-   v_Normal = vec3(ModelView * vec4(a_Normal,0.0));
+   v_Normal = vec3(ModelView * vec4(a_Normal,1.0));
    v_Position = vec3(ModelView * vec4(a_Position,1.0));
 
    //gl_Position = ModelView * vec4(a_Position, 1.0);

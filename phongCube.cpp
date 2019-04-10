@@ -276,6 +276,7 @@ int main(int aargc, char **argv) {
 
    bool running = true;
    int frame = 0;
+   color sceneLightColor = colors[lightColor];
 
    while(running) {
        processUserInputs(running);
@@ -291,6 +292,12 @@ int main(int aargc, char **argv) {
             glUseProgram(secondProgramHandle);
 
             frame++;
+
+            if (switchColor && frame % 6 == 0)
+            {
+                lightColor = (lightColor + 1) % COLORS_NUM;
+                sceneLightColor = colors[lightColor];
+            }
 
            /*************************
             * Setup Attributes
@@ -317,20 +324,15 @@ int main(int aargc, char **argv) {
            else if (object == 1)
               glBindTexture(GL_TEXTURE_2D, textureIDs[3]);
 
-
-
-           //glUniform1i(uTextureHandle, 0);
-           //glUniform1f(uThresholdHandle, threshold);
-
            if(currentCycle == BILLBOARD)
             {
                 glUseProgram(programHandle);
-                glUniform3f(uAmbientStrengthHandle, 0.2,0.2,0.2);
+                glUniform3f(uAmbientStrengthHandle, 0.4,0.2,0.2);
                 glUniform3f(uDiffuseStrengthHandle, 0.64,0.64,0.64);
                 glUniform4f(uSpecularStrengthHandle, 0.9,0.9,0.9,0.9);
-                glUniform3f(uLightPosHandle, 1.0,1.2,4.0);
+                glUniform3f(uLightPosHandle, 1.0,300.2,-300.0);
                 glUniform3f(uViewPosHandle, 1.0,1.0,1.0);
-                glUniform4f(uLightColorHandle, 1.0,1.0,1.0,1.0);
+                glUniform4f(uLightColorHandle, sceneLightColor.r,sceneLightColor.g,sceneLightColor.b,sceneLightColor.t);
 
                 if (object == 0)
                    glUniform1f(uScaleFactor, 40.0);
@@ -349,12 +351,12 @@ int main(int aargc, char **argv) {
            else
            {
                 glUseProgram(secondProgramHandle);
-                glUniform3f(uAmbientStrengthHandle1, 0.2,0.2,0.2);
+                glUniform3f(uAmbientStrengthHandle1, 0.4,0.2,0.2);
                 glUniform3f(uDiffuseStrengthHandle1, 0.64,0.64,0.64);
                 glUniform4f(uSpecularStrengthHandle1, 0.9,0.9,0.9,0.9);
-                glUniform3f(uLightPosHandle1, 1.0,161.2,4.0);
+                glUniform3f(uLightPosHandle1, 1.0,300.2,-300.0);
                 glUniform3f(uViewPosHandle1, 1.0,1.0,1.0);
-                glUniform4f(uLightColorHandle1, 1.0,1.0,1.0,1.0);
+                glUniform4f(uLightColorHandle, sceneLightColor.r,sceneLightColor.g,sceneLightColor.b,sceneLightColor.t);
 
                 if (object == 0)
                    setupMVP(mvp,model,view,proj);
@@ -384,9 +386,9 @@ int main(int aargc, char **argv) {
            glUniform3f(uAmbientStrengthHandle1, 0.2,0.2,0.2);
            glUniform3f(uDiffuseStrengthHandle1, 0.64,0.64,0.64);
            glUniform4f(uSpecularStrengthHandle1, 0.9,0.9,0.9,0.9);
-           glUniform3f(uLightPosHandle1, 1.0,161.2,4.0);
+           glUniform3f(uLightPosHandle1, 1.0,400.2,-800.0);
            glUniform3f(uViewPosHandle1, 1.0,1.0,1.0);
-           glUniform4f(uLightColorHandle1, 1.0,1.0,1.0,1.0);
+           glUniform4f(uLightColorHandle1, sceneLightColor.r,sceneLightColor.g,sceneLightColor.b,sceneLightColor.t);
 
            setupMVP1(mvp,model,view,proj);
            glUniformMatrix4fv(uMatrixHandle1, 1, false, &mvp[0][0]);
@@ -405,7 +407,6 @@ int main(int aargc, char **argv) {
    }
 
    free(vertexBufferData);
-   //free(vertexBufferData1);
    
    return 0;
 }

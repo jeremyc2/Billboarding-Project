@@ -20,6 +20,8 @@
 #define SCREEN_H 900.0f
 #define TEXTURE_NUM 2
 #define OBJECT_NUM 2
+#define COLORS_NUM 8
+
 
 // Abbreviate namespace references 
 using glm::mat4;
@@ -55,6 +57,24 @@ bool isS = false;
 float threshold = 1.0;
 int texture = 0;
 int object = 0;
+int lightColor = 0;
+bool switchColor = false;
+
+struct color {
+	double r;
+	double g;
+	double b;
+	double t;
+};
+
+color colors [COLORS_NUM] = { {1.0,1.0,1.0,1.0},
+                               {0.105,0.251,0.255,1.0},
+							   {0.137,0.255,0.0,1.0},
+							   {0.0,0.0,0.0,1.0},
+							   {1.0,0.0,0.0,1.0},
+							   {0.255,0.231,0.0,1.0},
+							   {0.189,0.0,0.255,1.0},
+							   {0.240,0.109,0.0,1.0} };
 
 enum Cycle {
 	BILLBOARD,
@@ -93,6 +113,14 @@ bool processUserInputs(bool & running)
 		if(e.type == SDL_KEYDOWN && e.key.keysym.sym == 'y') 
 		{
 			object = (object + 1) % TEXTURE_NUM;
+			break;
+		}
+		if(e.type == SDL_KEYDOWN && e.key.keysym.sym == ';') 
+		{
+			if (switchColor == true)
+			   switchColor = false;
+			else 
+			   switchColor = true;
 			break;
 		}
 		if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) 
@@ -369,7 +397,7 @@ bool loadTexture(char * fileName, int & handle)
 	return true;
 }
 
-
+// bunny
 float potRot = 0.0;
 void setupMVP(mat4 & mvp, mat4 & modelOut,mat4 & viewOut,mat4 & projOut)
 {
@@ -391,6 +419,7 @@ void setupMVP(mat4 & mvp, mat4 & modelOut,mat4 & viewOut,mat4 & projOut)
 	potRot += 1.50; // was .05
 }
 
+// teapot 
 void setupMVP2(mat4 & mvp, mat4 & modelOut,mat4 & viewOut,mat4 & projOut)
 {
 	mat4 proj = glm::perspective(glm::radians(60.0f), SCREEN_W / SCREEN_H, 0.1f, 100.0f);  // Perspective matrix
@@ -400,7 +429,7 @@ void setupMVP2(mat4 & mvp, mat4 & modelOut,mat4 & viewOut,mat4 & projOut)
 	view = 		glm::translate(view, 		glm::vec3(-myCam.camX, -myCam.camY, -myCam.camZ));
 	mat4 model = glm::mat4(1.0);
 	model = glm::mat4(1.0);
-    model = glm::translate(model, glm::vec3(0, 0, -50));
+    model = glm::translate(model, glm::vec3(0, 0, -35));
     model = glm::rotate(model, glm::radians(-potRot), glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::scale(model, glm::vec3(3)); //40 3.0
 	mvp = proj * view * model;
