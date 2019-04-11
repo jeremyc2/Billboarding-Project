@@ -59,6 +59,7 @@ int texture = 0;
 int object = 0;
 int lightColor = 0;
 bool switchColor = false;
+bool wiggleMode = false;
 
 struct color {
 	double r;
@@ -121,6 +122,14 @@ bool processUserInputs(bool & running)
 			   switchColor = false;
 			else 
 			   switchColor = true;
+			break;
+		}
+		if(e.type == SDL_KEYDOWN && e.key.keysym.sym == 'p') 
+		{
+			if (wiggleMode == true)
+			   wiggleMode = false;
+			else 
+			   wiggleMode = true;
 			break;
 		}
 		if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) 

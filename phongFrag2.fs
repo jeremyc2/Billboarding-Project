@@ -10,6 +10,8 @@ varying vec2 v_UV;
 varying vec3 v_Normal;
 varying vec3 v_Position;
 
+
+
 void main()
 {
     float ambientStrength = ambientStrength[0];

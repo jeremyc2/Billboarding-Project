@@ -3,6 +3,7 @@ uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Projection;
 uniform float scaleFactor;
+uniform float frequency;
 
 attribute vec3 a_Position;
 attribute vec2 a_UV;
@@ -30,12 +31,15 @@ void main()
    ModelView[2][1] = 0.0;
    ModelView[2][2] = scaleFactor;
 
+   float x = (sin(a_Position.y * frequency) * .01) + a_Position.x;
+   vec3 position = vec3(x,a_Position.y,a_Position.z);
+
    v_UV = a_UV;
    v_Normal = vec3(ModelView * vec4(a_Normal,1.0));
-   v_Position = vec3(ModelView * vec4(a_Position,1.0));
+   v_Position = vec3(ModelView * vec4(position,1.0));
 
    //gl_Position = ModelView * vec4(a_Position, 1.0);
    //gl_Position /= gl_Position.w;
    //gl_Position.xy += a_Position.xy * vec2(0.2,0.05);
-    gl_Position = u_Projection * ModelView * vec4(a_Position, 1.0);
+    gl_Position = u_Projection * ModelView * vec4(position, 1.0);
 }

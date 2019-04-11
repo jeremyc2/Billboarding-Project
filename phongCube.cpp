@@ -17,6 +17,7 @@ int main(int aargc, char **argv) {
     glewInit();
     glEnable(GL_DEPTH_TEST);
 
+
     bool success = true;
     string vertexShader;
     string secondVertexShader;
@@ -223,6 +224,8 @@ int main(int aargc, char **argv) {
    int uViewPosHandle = glGetUniformLocation(programHandle, "viewPos");
    int uLightColorHandle = glGetUniformLocation(programHandle, "lightColor");
    int uScaleFactor =  glGetUniformLocation(programHandle, "scaleFactor");
+   int uFrequency =  glGetUniformLocation(programHandle, "frequency");
+
 
    //int uThresholdHandle = glGetUniformLocation(programHandle, "u_Threshold");
 
@@ -252,6 +255,7 @@ int main(int aargc, char **argv) {
    int uLightPosHandle1 = glGetUniformLocation(secondProgramHandle, "lightPos");
    int uViewPosHandle1 = glGetUniformLocation(secondProgramHandle, "viewPos");
    int uLightColorHandle1 = glGetUniformLocation(secondProgramHandle, "lightColor");
+   int uFrequency1 =  glGetUniformLocation(secondProgramHandle, "frequency");
 
 
    //int uThresholdHandle1 = glGetUniformLocation(secondProgramHandle, "u_Threshold");
@@ -277,11 +281,14 @@ int main(int aargc, char **argv) {
    bool running = true;
    int frame = 0;
    color sceneLightColor = colors[lightColor];
+   float frequency = 0.0;
+   int direction = 1;
 
    while(running) {
        processUserInputs(running);
 
        {
+
            // Clear buffers
            glClearColor(0, 0, 0, 1.0);
            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -298,6 +305,11 @@ int main(int aargc, char **argv) {
                 lightColor = (lightColor + 1) % COLORS_NUM;
                 sceneLightColor = colors[lightColor];
             }
+
+            if (frequency > 150)
+               direction = 0;
+            if (frequency < -150)
+               direction = 1;
 
            /*************************
             * Setup Attributes
@@ -338,6 +350,16 @@ int main(int aargc, char **argv) {
                    glUniform1f(uScaleFactor, 40.0);
                 else if (object == 1)
                    glUniform1f(uScaleFactor, 3.0);
+                if (object == 0 && wiggleMode)
+                {
+                   glUniform1f(uFrequency, frequency);
+                   if (direction)
+                      frequency += 0.7;
+                   else 
+                      frequency -= 0.7;
+                }
+                else 
+                   glUniform1f(uFrequency, 0);
 
                 if (object == 0)
                    setupMVP(mvp,model,view,proj);
@@ -362,6 +384,18 @@ int main(int aargc, char **argv) {
                    setupMVP(mvp,model,view,proj);
                 else if (object == 1)
                    setupMVP2(mvp,model,view,proj);
+
+                if (object == 0 && wiggleMode)
+                {
+                   glUniform1f(uFrequency1, frequency);
+                   if (direction)
+                      frequency += 0.7;
+                   else 
+                      frequency -= 0.7;
+                }
+                else 
+                   glUniform1f(uFrequency1, 0);
+
                 glUniformMatrix4fv(uMatrixHandle1, 1, false, &mvp[0][0]);
                 glUniformMatrix4fv(uModelHandle1, 1, false, &model[0][0]);
                 glUniformMatrix4fv(uViewHandle1, 1, false, &view[0][0]);
@@ -389,6 +423,7 @@ int main(int aargc, char **argv) {
            glUniform3f(uLightPosHandle1, 1.0,400.2,-800.0);
            glUniform3f(uViewPosHandle1, 1.0,1.0,1.0);
            glUniform4f(uLightColorHandle1, sceneLightColor.r,sceneLightColor.g,sceneLightColor.b,sceneLightColor.t);
+
 
            setupMVP1(mvp,model,view,proj);
            glUniformMatrix4fv(uMatrixHandle1, 1, false, &mvp[0][0]);
