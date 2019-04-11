@@ -59,7 +59,6 @@ int main(int aargc, char **argv) {
             vertexBufferData[i++] = vertexBuffer[vb].uv[1];
         }
 
-        // Leave normal data for later
     }
 
     vector<int> textureIDs;
